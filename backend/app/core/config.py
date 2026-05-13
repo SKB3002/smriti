@@ -43,6 +43,9 @@ class Settings(BaseSettings):
     # Internal HMAC
     INTERNAL_HMAC_SECRET: str
 
+    # CORS — comma-separated list of allowed origins
+    CORS_ORIGINS: str = "*"
+
     # Runtime
     ENV: Literal["dev", "staging", "prod"] = "dev"
     LLM_PROVIDER: Literal["groq"] = "groq"
