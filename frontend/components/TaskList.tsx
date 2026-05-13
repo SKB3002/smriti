@@ -46,7 +46,12 @@ export function TaskList({
               aria-label={done ? "Mark not done" : "Mark done"}
               disabled={busy === t.id}
               onClick={() => toggle(t)}
-              className="grid h-7 w-7 place-items-center rounded-full border border-line-strong text-[var(--color-faint)] hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] transition-colors duration-200 cursor-pointer disabled:opacity-50"
+              className={clsx(
+                "grid h-7 w-7 place-items-center rounded-full border transition-colors duration-200 cursor-pointer disabled:opacity-50",
+                done
+                  ? "border-[var(--color-accent)] text-[var(--color-accent)]"
+                  : "border-line-strong text-[var(--color-faint)] hover:border-[var(--color-accent)] hover:text-[var(--color-accent)]",
+              )}
             >
               {done ? (
                 <Check size={14} strokeWidth={2.5} />
@@ -58,7 +63,7 @@ export function TaskList({
               className={clsx(
                 "flex-1 text-[var(--color-fg)] transition-colors duration-200",
                 done &&
-                  "text-[var(--color-faint)] line-through decoration-[var(--color-faint)]/40",
+                  "text-[var(--color-muted)] line-through decoration-[var(--color-muted)] decoration-2",
               )}
             >
               {t.title}
