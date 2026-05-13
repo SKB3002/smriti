@@ -65,6 +65,9 @@ class ReminderService:
             v = row.get(k)
             if isinstance(v, datetime):
                 row[k] = v.astimezone(UTC).isoformat() if v.tzinfo else v.replace(tzinfo=UTC).isoformat()
+        # ensure tags is always a list (default empty)
+        if "tags" not in row or row["tags"] is None:
+            row["tags"] = []
         row["next_fire_at"] = initial_next_fire_at(row).isoformat()
         return await self._storage.insert(_TABLE, row)
 

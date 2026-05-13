@@ -1,12 +1,14 @@
 "use client";
 
+import { useState } from "react";
 import useSWR from "swr";
 import { Trash2 } from "lucide-react";
 import { clsx } from "clsx";
 import { apiFetch, ApiError } from "@/lib/api";
-import type { Reminder, Task } from "@/lib/types";
+import type { Reminder, ReminderParseResult, Task } from "@/lib/types";
 import { PageHeader, EmptyState } from "@/components/PageHeader";
 import { ReminderForm } from "@/components/ReminderForm";
+import { NLReminderBar, TagChip } from "@/components/NLReminderBar";
 
 function fmt(iso: string | null): string {
   if (!iso) return "—";
@@ -22,6 +24,7 @@ function fmt(iso: string | null): string {
 export default function RemindersPage() {
   const { data: reminders, error, isLoading, mutate } = useSWR<Reminder[]>("/reminders");
   const { data: tasks } = useSWR<Task[]>("/tasks");
+  const [prefill, setPrefill] = useState<ReminderParseResult | null>(null);
   const titles: Record<string, string> = {};
   for (const t of tasks ?? []) titles[t.id] = t.title;
 
@@ -44,9 +47,27 @@ export default function RemindersPage() {
         subtitle="Normal fires once. Persistent pings every N minutes inside a window."
       />
 
+      {/* NL quick-add */}
+      <div className="space-y-4">
+        <NLReminderBar
+          onParsed={(result) => setPrefill(result)}
+        />
+        {prefill && (
+          <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--color-accent)]">
+            ↓ review the parsed details below, pick a task, then add
+          </p>
+        )}
+      </div>
+
+      {/* manual / prefill form */}
       <div className="rounded-[var(--radius-md)] border border-line p-5">
         <ReminderForm
-          onCreated={(r) => mutate([r, ...(reminders ?? [])], { revalidate: true })}
+          key={prefill ? JSON.stringify(prefill) : "empty"}
+          prefill={prefill ?? undefined}
+          onCreated={(r) => {
+            mutate([r, ...(reminders ?? [])], { revalidate: true });
+            setPrefill(null);
+          }}
         />
       </div>
 
@@ -65,7 +86,7 @@ export default function RemindersPage() {
           {reminders.map((r) => (
             <li
               key={r.id}
-              className="group flex flex-wrap items-center gap-x-4 gap-y-1 border-b border-line px-6 py-4 transition-colors duration-200 hover:bg-[var(--color-surface)]"
+              className="group flex flex-wrap items-center gap-x-4 gap-y-1.5 border-b border-line px-6 py-4 transition-colors duration-200 hover:bg-[var(--color-surface)]"
             >
               <span
                 className={clsx(
@@ -80,6 +101,13 @@ export default function RemindersPage() {
               <span className="flex-1 truncate text-[var(--color-fg)]">
                 {titles[r.task_id] ?? r.task_id}
               </span>
+              {r.tags?.length > 0 && (
+                <span className="flex flex-wrap gap-1">
+                  {r.tags.map((t) => (
+                    <TagChip key={t} tag={t} />
+                  ))}
+                </span>
+              )}
               <span className="font-mono text-xs text-[var(--color-muted)]">next: {fmt(r.next_fire_at)}</span>
               {r.kind === "persistent" && (
                 <span className="font-mono text-xs text-[var(--color-faint)]">

@@ -90,6 +90,7 @@ class ReminderCreateIn(BaseModel):
     is_stealth: bool = False
     codename_id: UUID | None = None
     enabled: bool = True
+    tags: list[str] = Field(default_factory=list)
 
 
 class ReminderUpdateIn(BaseModel):
@@ -117,6 +118,7 @@ class ReminderOut(BaseModel):
     last_fired_at: datetime | None = None
     next_fire_at: datetime | None = None
     enabled: bool
+    tags: list[str] = Field(default_factory=list)
     created_at: datetime
     updated_at: datetime
 
@@ -175,6 +177,20 @@ class PrioritizedTask(BaseModel):
 
 class PrioritizeOut(BaseModel):
     items: list[PrioritizedTask]
+
+
+class ReminderParseIn(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    text: str = Field(min_length=1, max_length=1000)
+
+
+class ReminderParseOut(BaseModel):
+    title: str
+    start_at: datetime
+    kind: ReminderKind
+    end_at: datetime | None = None
+    frequency_minutes: int | None = None
+    tags: list[str]
 
 
 # ---------- Internal ----------

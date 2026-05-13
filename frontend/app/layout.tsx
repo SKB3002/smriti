@@ -42,7 +42,7 @@ export default function RootLayout({
           <SessionInit />
           <ServiceWorkerRegistrar />
           <TopNav />
-          <main className="mx-auto max-w-3xl px-6 pb-16 pt-10">{children}</main>
+          <main className="w-full px-6 pb-16 pt-10">{children}</main>
         </SWRProvider>
       </body>
     </html>

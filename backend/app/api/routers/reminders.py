@@ -3,12 +3,20 @@ from __future__ import annotations
 
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Response
+from fastapi import APIRouter, Depends, Request, Response
 
-from app.api.deps import CurrentUser, current_user, get_user_storage
+from app.api.deps import CurrentUser, current_user, get_container, get_user_storage
+from app.core.container import Container
+from app.services.reminder_parse_service import ReminderParseService
 from app.services.reminder_service import ReminderService
 from app.strategies.storage.base import StorageStrategy
-from app.validators.schemas import ReminderCreateIn, ReminderOut, ReminderUpdateIn
+from app.validators.schemas import (
+    ReminderCreateIn,
+    ReminderOut,
+    ReminderParseIn,
+    ReminderParseOut,
+    ReminderUpdateIn,
+)
 
 router = APIRouter(prefix="/reminders", tags=["reminders"])
 
@@ -17,12 +25,25 @@ def _service(storage: StorageStrategy = Depends(get_user_storage)) -> ReminderSe
     return ReminderService(storage)
 
 
+def _parse_service(container: Container = Depends(get_container)) -> ReminderParseService:
+    return ReminderParseService(container.llm)
+
+
 @router.get("", response_model=list[ReminderOut])
 async def list_reminders(
     user: CurrentUser = Depends(current_user),
     svc: ReminderService = Depends(_service),
 ) -> list[dict]:
     return await svc.list(user.id)
+
+
+@router.post("/parse", response_model=ReminderParseOut)
+async def parse_reminder(
+    payload: ReminderParseIn,
+    _user: CurrentUser = Depends(current_user),
+    svc: ReminderParseService = Depends(_parse_service),
+) -> dict:
+    return await svc.parse(payload.text)
 
 
 @router.post("", response_model=ReminderOut, status_code=201)

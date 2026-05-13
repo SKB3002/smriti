@@ -68,6 +68,7 @@ create table if not exists public.reminders (
     last_fired_at timestamptz,
     next_fire_at timestamptz,
     enabled boolean not null default true,
+    tags text[] not null default '{}',
     created_at timestamptz not null default now(),
     updated_at timestamptz not null default now(),
     check (
@@ -106,6 +107,9 @@ create index if not exists idx_reminders_enabled_next
     on public.reminders (enabled, next_fire_at);
 create index if not exists idx_reminders_user
     on public.reminders (user_id);
+
+create index if not exists idx_reminders_tags
+    on public.reminders using gin (tags);
 
 create index if not exists idx_codenames_user
     on public.codenames (user_id);

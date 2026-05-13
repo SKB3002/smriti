@@ -27,8 +27,18 @@ export type Reminder = {
   last_fired_at: string | null;
   next_fire_at: string | null;
   enabled: boolean;
+  tags: string[];
   created_at: string;
   updated_at: string;
+};
+
+export type ReminderParseResult = {
+  title: string;
+  start_at: string;
+  kind: ReminderKind;
+  end_at: string | null;
+  frequency_minutes: number | null;
+  tags: string[];
 };
 
 export type Task = {

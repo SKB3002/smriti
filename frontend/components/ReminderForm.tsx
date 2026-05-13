@@ -5,7 +5,8 @@ import useSWR from "swr";
 import { Plus } from "lucide-react";
 import { clsx } from "clsx";
 import { apiFetch, ApiError } from "@/lib/api";
-import type { Reminder, ReminderKind, Task } from "@/lib/types";
+import type { Reminder, ReminderKind, ReminderParseResult, Task } from "@/lib/types";
+import { TagChip } from "./NLReminderBar";
 import { Button, Field } from "./Field";
 
 type Codename = { id: string; codename: string; real_label: string };
@@ -27,18 +28,29 @@ function localInputToISO(local: string): string {
 
 export function ReminderForm({
   onCreated,
+  prefill,
 }: {
   onCreated?: (r: Reminder) => void;
+  prefill?: ReminderParseResult;
 }) {
-  const [kind, setKind] = useState<ReminderKind>("normal");
+  const [kind, setKind] = useState<ReminderKind>(prefill?.kind ?? "normal");
   const { data: tasks = [] } = useSWR<Task[]>("/tasks");
   const { data: codenames = [] } = useSWR<Codename[]>("/codenames");
   const [taskId, setTaskId] = useState("");
-  const [startAt, setStartAt] = useState(() => toLocalInputValue(15));
-  const [endAt, setEndAt] = useState(() => toLocalInputValue(60));
-  const [freq, setFreq] = useState(30);
+  const [startAt, setStartAt] = useState(() =>
+    prefill?.start_at
+      ? new Date(prefill.start_at).toISOString().slice(0, 16)
+      : toLocalInputValue(15),
+  );
+  const [endAt, setEndAt] = useState(() =>
+    prefill?.end_at
+      ? new Date(prefill.end_at).toISOString().slice(0, 16)
+      : toLocalInputValue(60),
+  );
+  const [freq, setFreq] = useState(prefill?.frequency_minutes ?? 30);
   const [isStealth, setIsStealth] = useState(false);
   const [codenameId, setCodenameId] = useState<string>("");
+  const [tags] = useState<string[]>(prefill?.tags ?? []);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
@@ -63,6 +75,7 @@ export function ReminderForm({
       start_at: localInputToISO(startAt),
       is_stealth: isStealth,
       codename_id: isStealth ? codenameId || null : null,
+      tags,
     };
     if (kind === "persistent") {
       body.end_at = localInputToISO(endAt);
@@ -112,6 +125,13 @@ export function ReminderForm({
           ? "Fires once at the given time."
           : "Pings every N minutes between start and end."}
       </p>
+
+      {prefill?.title && (
+        <div className="rounded-[var(--radius-sm)] border border-[var(--color-accent)]/30 bg-[var(--color-accent)]/5 px-3 py-2 text-sm text-[var(--color-fg)]">
+          <span className="mr-2 font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--color-accent)]">parsed</span>
+          {prefill.title}
+        </div>
+      )}
 
       <label className="block space-y-1.5">
         <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-[var(--color-faint)]">
@@ -194,6 +214,14 @@ export function ReminderForm({
             ))}
           </select>
         </label>
+      )}
+
+      {tags.length > 0 && (
+        <div className="flex flex-wrap gap-1.5">
+          {tags.map((t) => (
+            <TagChip key={t} tag={t} />
+          ))}
+        </div>
       )}
 
       <div className="flex items-center justify-end gap-3">
