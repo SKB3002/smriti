@@ -42,7 +42,7 @@ self.addEventListener("push", (event: PushEvent) => {
     }
   })();
 
-  const title = payload.title ?? "Second Brain";
+  const title = payload.title ?? "Smriti";
   const body = payload.is_stealth
     ? (payload.codename ?? "Reminder")
     : (payload.real_label ?? payload.codename ?? "Reminder");

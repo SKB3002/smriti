@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import useSWR from "swr";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Check } from "lucide-react";
+import { apiFetch } from "@/lib/api";
 import type { Reminder, Task } from "@/lib/types";
 import { StatusPill } from "./StatusPill";
 
@@ -21,7 +22,7 @@ function relTime(iso: string | null): string {
 }
 
 export function TodayPanel() {
-  const { data: tasks } = useSWR<Task[]>("/tasks");
+  const { data: tasks, mutate } = useSWR<Task[]>("/tasks");
   const { data: reminders } = useSWR<Reminder[]>("/reminders");
 
   const open = (tasks ?? []).filter((t) => t.status !== "done");
@@ -29,6 +30,14 @@ export function TodayPanel() {
   const next = (reminders ?? [])
     .filter((r) => r.enabled && r.next_fire_at)
     .sort((a, b) => (a.next_fire_at ?? "").localeCompare(b.next_fire_at ?? ""))[0];
+
+  async function markDone(task: Task) {
+    const updated = await apiFetch<Task>(`/tasks/${task.id}`, {
+      method: "PATCH",
+      body: { status: "done", completed_at: new Date().toISOString() },
+    });
+    mutate((prev) => prev?.map((t) => (t.id === updated.id ? updated : t)), { revalidate: false });
+  }
 
   return (
     <div className="space-y-6">
@@ -67,6 +76,13 @@ export function TodayPanel() {
           <ul className="-mx-6 border-t border-line">
             {top.map((t, i) => (
               <li key={t.id} className="flex items-center gap-4 border-b border-line px-6 py-3">
+                <button
+                  onClick={() => markDone(t)}
+                  aria-label={`Mark "${t.title}" as done`}
+                  className="group flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-line text-[var(--color-faint)] hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] transition-colors duration-150 cursor-pointer"
+                >
+                  <Check size={11} strokeWidth={2.5} className="opacity-0 group-hover:opacity-100 transition-opacity duration-150" />
+                </button>
                 <span className="font-mono text-xs text-[var(--color-faint)] tabular-nums">
                   {String(i + 1).padStart(2, "0")}
                 </span>

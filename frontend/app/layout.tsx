@@ -19,7 +19,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Second Brain",
+  title: "Smriti",
   description: "Projects, tasks, and reminders with stealth push.",
   manifest: "/manifest.webmanifest",
 };
