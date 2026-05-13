@@ -26,7 +26,9 @@ class Settings(BaseSettings):
     SUPABASE_URL: str
     SUPABASE_ANON_KEY: str
     SUPABASE_SERVICE_KEY: str
-    SUPABASE_JWT_SECRET: str
+    # Reserved: we do not verify Supabase JWTs server-side (RLS is the boundary).
+    # Keep optional so the env doesn't need to set it.
+    SUPABASE_JWT_SECRET: str = ""
 
     # Groq
     GROQ_API_KEY: str
