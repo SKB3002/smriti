@@ -20,6 +20,15 @@ function toLocalInputValue(dateOffsetMin: number): string {
   );
 }
 
+function isoToLocalInput(iso: string): string {
+  const d = new Date(iso);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return (
+    `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}` +
+    `T${pad(d.getHours())}:${pad(d.getMinutes())}`
+  );
+}
+
 function localInputToISO(local: string): string {
   // datetime-local gives "YYYY-MM-DDTHH:MM" in the user's local tz; new Date
   // interprets it as local time. toISOString converts to UTC ISO.
@@ -38,14 +47,10 @@ export function ReminderForm({
   const { data: codenames = [] } = useSWR<Codename[]>("/codenames");
   const [taskId, setTaskId] = useState("");
   const [startAt, setStartAt] = useState(() =>
-    prefill?.start_at
-      ? new Date(prefill.start_at).toISOString().slice(0, 16)
-      : toLocalInputValue(15),
+    prefill?.start_at ? isoToLocalInput(prefill.start_at) : toLocalInputValue(15),
   );
   const [endAt, setEndAt] = useState(() =>
-    prefill?.end_at
-      ? new Date(prefill.end_at).toISOString().slice(0, 16)
-      : toLocalInputValue(60),
+    prefill?.end_at ? isoToLocalInput(prefill.end_at) : toLocalInputValue(60),
   );
   const [freq, setFreq] = useState(prefill?.frequency_minutes ?? 30);
   const [isStealth, setIsStealth] = useState(false);

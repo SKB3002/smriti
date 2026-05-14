@@ -43,9 +43,10 @@ export function NLReminderBar({ onParsed }: Props) {
     setBusy(true);
     setErr(null);
     try {
+      const tzOffsetMinutes = -new Date().getTimezoneOffset();
       const result = await apiFetch<ReminderParseResult>("/reminders/parse", {
         method: "POST",
-        body: { text: trimmed },
+        body: { text: trimmed, tz_offset_minutes: tzOffsetMinutes },
       });
       onParsed(result);
       setText("");

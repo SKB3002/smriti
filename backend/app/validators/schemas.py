@@ -182,6 +182,7 @@ class PrioritizeOut(BaseModel):
 class ReminderParseIn(BaseModel):
     model_config = ConfigDict(extra="forbid")
     text: str = Field(min_length=1, max_length=1000)
+    tz_offset_minutes: int = Field(default=0, ge=-840, le=840)
 
 
 class ReminderParseOut(BaseModel):

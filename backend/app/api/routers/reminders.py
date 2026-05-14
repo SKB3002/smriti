@@ -43,7 +43,7 @@ async def parse_reminder(
     _user: CurrentUser = Depends(current_user),
     svc: ReminderParseService = Depends(_parse_service),
 ) -> dict:
-    return await svc.parse(payload.text)
+    return await svc.parse(payload.text, tz_offset_minutes=payload.tz_offset_minutes)
 
 
 @router.post("", response_model=ReminderOut, status_code=201)

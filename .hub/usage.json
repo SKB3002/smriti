@@ -1,0 +1,21 @@
+{
+  "runs": [
+    {
+      "id": "r_2026-05-13_001",
+      "started_at": "2026-05-13T00:00:00Z",
+      "ended_at": "2026-05-13T00:05:00Z",
+      "command": "/hub:brainstorm",
+      "args": "AI features for a crazy personal productivity project + full-width UI fix",
+      "tier_declared": "MEDIUM",
+      "tier_observed": "~30k",
+      "approved": true,
+      "chosen_alternative": null,
+      "agents": [{"name": "hub:product-manager", "approx_tokens": 30000}],
+      "skills": ["hub:socratic-gate"],
+      "files_written": 0,
+      "approx_total_tokens": 30000,
+      "user_verdict": null,
+      "notes": null
+    }
+  ]
+}
