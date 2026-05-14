@@ -36,8 +36,12 @@ async def fire_due(
     payload: FireDueIn,
     container: Container = Depends(_container),
 ) -> FireDueOut:
-    title = "Second Brain"
-    body = payload.codename if payload.is_stealth else (payload.real_label or "Reminder")
+    if payload.is_stealth:
+        title = payload.codename or "Smriti"
+        body = "Tap to reveal"
+    else:
+        title = payload.real_label or "Smriti reminder"
+        body = "Tap to open"
     data = {
         "reminder_id": str(payload.reminder_id),
         "is_stealth": payload.is_stealth,
