@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, Plus } from "lucide-react";
 import { NotifyToggle } from "@/components/NotifyToggle";
@@ -22,29 +23,85 @@ function fmtDate(d: Date): string {
   });
 }
 
+function greetingFor(d: Date): { prefix: string; accent: string } {
+  const h = d.getHours();
+  if (h < 5) return { prefix: "A quiet", accent: "late night" };
+  if (h < 12) return { prefix: "Good", accent: "morning" };
+  if (h < 17) return { prefix: "Good", accent: "afternoon" };
+  if (h < 21) return { prefix: "Good", accent: "evening" };
+  return { prefix: "Winding", accent: "down" };
+}
+
 export default function DashboardPage() {
-  const today = fmtDate(new Date());
+  const [now, setNow] = useState<Date | null>(null);
+  useEffect(() => {
+    setNow(new Date());
+    const id = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  const today = now ? fmtDate(now) : "";
+  const greeting = greetingFor(now ?? new Date());
+  const clock = now
+    ? now.toLocaleTimeString(undefined, {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      })
+    : "";
+
   return (
     <>
       <YesterdayModal />
 
-      <section className="space-y-12">
-        <header className="space-y-3">
-          <p className="font-mono text-xs uppercase tracking-[0.18em] text-[var(--color-faint)]">
-            {today}
-          </p>
-          <h1 className="text-5xl font-medium tracking-tight sm:text-6xl">
-            Today<span className="text-[var(--color-accent)]">.</span>
+      <section className="relative space-y-16 animate-[fade-in_700ms_ease-out]">
+        <header className="relative space-y-7 pt-4">
+          {/* Eyebrow rule + date/clock */}
+          <div className="flex items-center gap-4">
+            <span className="h-px w-10 bg-[var(--color-line-strong)]" />
+            <p className="flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.32em] text-[var(--color-faint)]">
+              <span>{today}</span>
+              <span className="h-1 w-1 rounded-full bg-[var(--color-faint)]" />
+              <span className="tabular-nums text-[var(--color-muted)]">{clock}</span>
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--color-accent)] opacity-60" />
+                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[var(--color-accent)]" />
+              </span>
+            </p>
+          </div>
+
+          {/* Editorial split greeting: sans + italic serif */}
+          <h1
+            className="text-6xl font-light leading-[0.95] tracking-tight text-[var(--color-fg)] sm:text-[88px]"
+            style={{ paddingBottom: "0.05em" }}
+          >
+            {greeting.prefix}{" "}
+            <span
+              className="bg-gradient-to-br from-[var(--color-fg)] to-[var(--color-accent)] bg-clip-text italic text-transparent"
+              style={{
+                fontFamily: "var(--font-serif)",
+                fontWeight: 400,
+              }}
+            >
+              {greeting.accent}
+            </span>
+            <span className="text-[var(--color-accent)]">.</span>
           </h1>
-          <p className="max-w-md text-[var(--color-muted)]">
-            A quiet place for projects, tasks, and reminders that nudge you at
-            exactly the right moment.
+
+          <p
+            className="max-w-lg text-lg leading-relaxed text-[var(--color-muted)]"
+            style={{ fontFamily: "var(--font-serif)" }}
+          >
+            Your second memory — a calm place to capture, schedule, and let
+            Smriti nudge you at exactly the right moment.
           </p>
         </header>
 
-        <TodayPanel />
+        <div className="relative">
+          <TodayPanel />
+        </div>
 
-        <div className="flex flex-wrap gap-3">
+        <div className="relative flex flex-wrap gap-3">
           <Link
             href="/tasks"
             className="inline-flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--color-accent)] px-4 py-2.5 text-sm font-medium text-[var(--color-accent-fg)] hover:brightness-110 transition-[filter] duration-200 cursor-pointer"
@@ -61,9 +118,11 @@ export default function DashboardPage() {
           <NotifyToggle />
         </div>
 
-        <PrioritizePanel />
+        <div className="relative">
+          <PrioritizePanel />
+        </div>
 
-        <nav aria-label="Sections" className="-mx-6 border-t border-line">
+        <nav aria-label="Sections" className="relative -mx-6 border-t border-line">
           {SECTIONS.map((s) => (
             <Link
               key={s.href}

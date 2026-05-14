@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
+import { AmbientGlow } from "@/components/AmbientGlow";
 import { ServiceWorkerRegistrar } from "@/components/ServiceWorkerRegistrar";
 import { SessionInit } from "@/components/SessionInit";
 import { SWRProvider } from "@/components/SWRProvider";
@@ -15,6 +16,14 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   subsets: ["latin"],
   variable: "--font-geist-mono",
+  display: "swap",
+});
+
+const instrumentSerif = Instrument_Serif({
+  subsets: ["latin"],
+  weight: "400",
+  style: ["normal", "italic"],
+  variable: "--font-serif",
   display: "swap",
 });
 
@@ -36,13 +45,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
+    <html
+      lang="en"
+      className={`${geistSans.variable} ${geistMono.variable} ${instrumentSerif.variable}`}
+    >
       <body className="min-h-screen antialiased" suppressHydrationWarning>
         <SWRProvider>
           <SessionInit />
           <ServiceWorkerRegistrar />
+          <AmbientGlow />
           <TopNav />
-          <main className="w-full px-6 pb-16 pt-10">{children}</main>
+          <main className="relative z-10 w-full px-6 pb-16 pt-10">{children}</main>
         </SWRProvider>
       </body>
     </html>

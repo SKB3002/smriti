@@ -54,9 +54,10 @@ export function TopNav() {
       <div className="mx-auto flex max-w-3xl items-center gap-6 px-6 py-4">
         <Link
           href="/"
-          className="font-mono text-sm tracking-tight text-[var(--color-fg)] hover:text-[var(--color-accent)] transition-colors duration-200"
+          className="text-lg tracking-tight text-[var(--color-fg)] hover:text-[var(--color-accent)] transition-colors duration-200"
+          style={{ fontFamily: "var(--font-serif)", fontWeight: 400 }}
         >
-          second<span className="text-[var(--color-accent)]">·</span>brain
+          Smriti<span className="text-[var(--color-accent)]">.</span>
         </Link>
         <nav className="hidden gap-5 text-sm sm:flex">
           {SECTIONS.map((s) => {

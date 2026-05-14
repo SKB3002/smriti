@@ -198,7 +198,29 @@ create policy "push_service_select" on public.push_subscriptions
     using (auth.role() = 'service_role');
 
 -- ============================================================
--- 6. pg_cron job — fire due reminders every minute
+-- 6. Data API grants
+-- ============================================================
+-- Required for supabase-js / PostgREST access. Enforced on new projects
+-- from 2026-05-30 and on existing projects from 2026-10-30. RLS still
+-- gates row visibility; grants only open the table to the role.
+grant select, insert, update, delete on
+    public.projects,
+    public.tasks,
+    public.reminders,
+    public.codenames,
+    public.push_subscriptions
+to authenticated;
+
+grant select, insert, update, delete on
+    public.projects,
+    public.tasks,
+    public.reminders,
+    public.codenames,
+    public.push_subscriptions
+to service_role;
+
+-- ============================================================
+-- 7. pg_cron job — fire due reminders every minute
 -- ============================================================
 -- NOTE: Replace <EDGE_FN_URL> and <SERVICE_ROLE_KEY> before applying.
 -- Or set them as Vault secrets and reference here.

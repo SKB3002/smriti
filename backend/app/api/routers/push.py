@@ -61,7 +61,7 @@ async def send_test_push(
                     "endpoint": s["endpoint"],
                     "keys": {"p256dh": s["p256dh"], "auth": s["auth"]},
                 },
-                title="Second Brain",
+                title="Smriti",
                 body="Test push — if you see this, the pipeline works.",
                 data={"test": True},
             )
