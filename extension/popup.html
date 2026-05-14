@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Smriti</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="hdr">
+      <h1>Smriti<span class="dot">.</span></h1>
+      <p class="sub">Right-click any selected text and add it to Smriti.</p>
+    </header>
+
+    <section id="connected-view" hidden>
+      <p class="status">
+        <span class="pulse"></span>
+        Connected as <strong id="account-email">—</strong>
+      </p>
+
+      <label class="field">
+        <span class="label">Default project</span>
+        <select id="project-select"></select>
+      </label>
+
+      <div class="row">
+        <a id="open-app" class="btn ghost" target="_blank">Open Smriti</a>
+        <button id="disconnect" class="btn ghost danger">Disconnect</button>
+      </div>
+    </section>
+
+    <section id="connect-view">
+      <p class="hint">
+        Connect by pasting your session token from
+        <a id="settings-link" target="_blank">Smriti → Settings → Extension</a>.
+      </p>
+
+      <textarea
+        id="session-input"
+        rows="6"
+        placeholder='Paste { "access_token": "...", "refresh_token": "..." } here'
+      ></textarea>
+
+      <button id="connect-btn" class="btn primary">Connect</button>
+
+      <p id="connect-err" class="err" hidden></p>
+    </section>
+
+    <footer>
+      <a id="options-link" href="#">Advanced options</a>
+    </footer>
+
+    <script src="popup.js"></script>
+  </body>
+</html>

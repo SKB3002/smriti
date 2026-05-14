@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Smriti — Advanced options</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="options">
+    <header class="hdr">
+      <h1>Advanced options</h1>
+      <p class="sub">Only change these if your Smriti instance is self-hosted.</p>
+    </header>
+
+    <label class="field">
+      <span class="label">API URL</span>
+      <input id="api-url" type="url" placeholder="https://smriti-wxgs.onrender.com" />
+    </label>
+
+    <label class="field">
+      <span class="label">Web app URL</span>
+      <input id="app-url" type="url" placeholder="https://smriti-iota.vercel.app" />
+    </label>
+
+    <label class="field">
+      <span class="label">Supabase URL</span>
+      <input id="supabase-url" type="url" placeholder="https://xxx.supabase.co" />
+    </label>
+
+    <label class="field">
+      <span class="label">Supabase anon key</span>
+      <input id="supabase-anon-key" type="text" placeholder="eyJ..." />
+    </label>
+
+    <div class="row">
+      <button id="save" class="btn primary">Save</button>
+      <button id="reset" class="btn ghost">Reset to defaults</button>
+    </div>
+    <p id="status" class="hint"></p>
+
+    <script src="options.js"></script>
+  </body>
+</html>
