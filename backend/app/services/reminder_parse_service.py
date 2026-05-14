@@ -32,9 +32,15 @@ Return ONLY valid JSON matching this exact schema:
 
 Rules:
 - IMPORTANT: When the user says a time like "10am" or "tomorrow at 3pm", they mean \
-their LOCAL time. Convert it to UTC using the provided timezone offset \
-(local_time_utc = local_time - offset_minutes). Example: user in IST (+330 min) \
-says "10am tomorrow" → that is 10:00 IST = 04:30 UTC.
+their LOCAL time. Convert it to UTC by SUBTRACTING the offset: \
+utc_time = local_time - offset_minutes. \
+Example: user in IST (offset = +330 min) says "10am tomorrow" → \
+10:00 local - 330 min = 04:30 UTC. \
+Example: user says "remind me in 3 minutes" and current UTC is 06:18, offset +330 → \
+local now = 06:18 + 330min = 11:48 IST, +3min = 11:51 IST, \
+back to UTC = 11:51 - 330min = 06:21 UTC. Return 06:21 UTC.
+- For relative phrases like "in N minutes/hours", compute from current UTC directly \
+(no timezone conversion needed since "now" has no local-vs-utc ambiguity).
 - kind="persistent" only if the user explicitly mentions a repeating/recurring interval.
   For persistent, end_at and frequency_minutes must be set.
 - kind="normal" otherwise. end_at and frequency_minutes must be null.
